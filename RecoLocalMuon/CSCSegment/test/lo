@@ -1,0 +1,33 @@
+15-Feb-2023 22:22:41 CET  Closed file root://xrootd-cms.infn.it//store/data/Run2018B/SingleMuon/RAW-RECO/ZMu-12Nov2019_UL2018-v2/270003/5FE6A215-7096-6B41-B499-D12FE193A89B.root
+----- Begin Fatal Exception 15-Feb-2023 22:22:41 CET-----------------------
+An exception of category 'DictionaryNotFound' occurred while
+   [0] Constructing the EventProcessor
+   [1] Calling ProductRegistry::initializeLookupTables, checking dictionaries for consumed products
+Exception Message:
+No data dictionary found for the following classes:
+
+  edm::RangeMap<CSCDetId,edm::OwnVector<CSCStripHit,edm::ClonePolicy<CSCStripHit> >,edm::ClonePolicy<CSCStripHit> >
+  edm::RangeMap<CSCDetId,edm::OwnVector<CSCWireHit,edm::ClonePolicy<CSCWireHit> >,edm::ClonePolicy<CSCWireHit> >
+  edm::Wrapper<edm::RangeMap<CSCDetId,edm::OwnVector<CSCStripHit,edm::ClonePolicy<CSCStripHit> >,edm::ClonePolicy<CSCStripHit> > >
+  edm::Wrapper<edm::RangeMap<CSCDetId,edm::OwnVector<CSCWireHit,edm::ClonePolicy<CSCWireHit> >,edm::ClonePolicy<CSCWireHit> > >
+
+Most likely each dictionary was never generated, but it may
+be that it was generated in the wrong package. Please add
+(or move) the specification '<class name="whatever"/>' to
+the appropriate classes_def.xml file along with any other
+information needed there. For example, if this class has any
+transient members, you need to specify them in classes_def.xml.
+Also include the class header in classes.h
+
+The list of types above was generated while checking for
+dictionaries related to products declared to be consumed.
+A type listed above might or might not be a type declared
+to be consumed. Instead it might be the type of a data member,
+base class, wrapped type or other object needed by a consumed
+type.  Below is some additional information which lists
+the types declared to be consumed by a module and which
+are associated with the types whose dictionaries were not
+found:
+
+  edm::RangeMap<CSCDetId,edm::OwnVector<CSCStripHit,edm::ClonePolicy<CSCStripHit> >,edm::ClonePolicy<CSCStripHit> >
+  edm::RangeMap<CSCDetId,edm::OwnVector<CSCWireHit,edm::ClonePolicy<CSCWireHit> >,edm::ClonePolicy<CSCWireHit> >
