@@ -32,6 +32,8 @@ public:
 
     /** Run the algorithm = build the segments in this chamber
     */
+
+
 //    virtual std::vector<CSCSegment> run(const CSCChamber* chamber, const std::vector<const CSCRecHit2D*>& rechits) = 0;  
     virtual std::vector<CSCSegment> run(const CSCChamber* chamber, const std::vector<const CSCRecHit2D*>& rechits,
                                         const std::vector<const CSCWireHit*>& wirehits, const std::vector<const CSCStripHit*>& striphits,

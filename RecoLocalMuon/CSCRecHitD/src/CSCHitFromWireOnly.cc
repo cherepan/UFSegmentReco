@@ -24,7 +24,7 @@ CSCHitFromWireOnly::CSCHitFromWireOnly( const edm::ParameterSet& ps ) : recoCond
   deltaT                 = ps.getParameter<int>("CSCWireClusterDeltaT");
   useReducedWireTime     = ps.getParameter<bool>("CSCUseReducedWireTimeWindow");
   wireTimeWindow_low     = ps.getParameter<int>("CSCWireTimeWindowLow");
-  wireTimeWindow_high     = ps.getParameter<int>("CSCWireTimeWindowHigh");
+  wireTimeWindow_high    = ps.getParameter<int>("CSCWireTimeWindowHigh");
 
   //clusterSize            = ps.getParameter<int>("CSCWireClusterMaxSize");
 }
@@ -38,28 +38,91 @@ std::vector<CSCWireHit> CSCHitFromWireOnly::runWire( const CSCDetId& id, const C
   std::vector<CSCWireHit> hitsInLayer;
 
   id_        = id;
-  layer_ = layer;
+  layer_     = layer;
   layergeom_ = layer->geometry();
   bool any_digis = true;
-  int n_wgroup = 0;
+  int  n_wgroup = 0;
 
+
+
+  //  std::cout<<" ============================================  chamber   "<< layer_->id().chamber() << "      layer      " << layer_->id().layer() << std::endl;
   // Loop over wire digi collection
-  for ( CSCWireDigiCollection::const_iterator it = rwired.first; it != rwired.second; ++it ) {
-    
-    const CSCWireDigi wdigi = *it;
-    if(isDeadWG( id, wdigi.getWireGroup())){ 	 
-      continue; 	 
-    }
-    if ( any_digis ) {
-      any_digis = false;
-      makeWireCluster( wdigi );
-      n_wgroup = 1;
-    } else {
-      if ( !addToCluster( wdigi ) ) {
-	      // Make Wire Hit from cluster, delete old cluster and start new one
-	float whit_pos = findWireHitPosition();
-      	bool deadWG_left = isDeadWG( id, wire_in_cluster.at(0) -1 ); 
-	bool deadWG_right = isDeadWG( id, wire_in_cluster.at(wire_in_cluster.size()-1) + 1);
+  for ( CSCWireDigiCollection::const_iterator it = rwired.first; it != rwired.second; ++it ) 
+    {
+
+
+      const CSCWireDigi wdigi = *it;
+      
+      if(isDeadWG( id, wdigi.getWireGroup()))
+	{ 	 
+	  continue; 	 
+	}
+
+
+
+      if ( any_digis ) {
+	any_digis = false;
+	makeWireCluster( wdigi );
+	n_wgroup = 1;
+      } else {
+	if ( !addToCluster( wdigi ) ) {
+	  // Make Wire Hit from cluster, delete old cluster and start new one
+	  float wire_hit_position = findWireHitPosition();
+	  bool deadWG_left = isDeadWG( id, wire_in_cluster.at(0) -1 ); 
+	  bool deadWG_right = isDeadWG( id, wire_in_cluster.at(wire_in_cluster.size()-1) + 1);
+	  short int aDeadWG = 0;
+	  if(!deadWG_left && !deadWG_right){
+	    aDeadWG = 0;
+	  }
+	  else if(deadWG_left && deadWG_right){
+	    aDeadWG = 255;
+	  }
+	  else{
+	    if(deadWG_left){
+	      aDeadWG = wire_in_cluster.at(0) -1;
+	    }
+	    else{
+	      aDeadWG = wire_in_cluster.at(wire_in_cluster.size()-1) + 1;
+	    }
+	  }
+	  
+	  // BEFORE: Set time bins for wire hit as the time bins of the central wire digi, lower of central two if an even number of digis.
+	  // NEW: Save time bin on for each wire group in wire cluster (wire cluster -> wire hit)
+	  
+	  std::vector <int> timeBinsOn; timeBinsOn.clear();//=wire_cluster[n_wgroup/2].getTimeBinsOn();
+	  for (int wg = 0; wg < n_wgroup; wg++) 
+	    timeBinsOn.push_back(wire_cluster[wg].getTimeBin());
+	  
+	  
+	  //CSCWireHit whit(id, wire_hit_position, wire_in_clusterAndBX, theTime, isDeadWGAround, timeBinsOn );
+	  CSCWireHit whit(id, wire_hit_position, wire_in_clusterAndBX, theTime, aDeadWG, timeBinsOn );
+	  
+	  if (!useReducedWireTime) 
+	    {
+	      hitsInLayer.push_back( whit );
+	    }
+	  else if (theTime >= wireTimeWindow_low && theTime <= wireTimeWindow_high) 
+	    {
+	      hitsInLayer.push_back( whit );	
+	    }
+	  
+	  makeWireCluster( wdigi );
+	  n_wgroup = 1;
+	} else {
+	  n_wgroup++;
+	}
+      }
+
+
+
+
+
+
+      // Don't forget to fill last wire hit !!!
+      if ( rwired.second - it == 1) {           
+	float wire_hit_position = findWireHitPosition();
+	bool deadWG_left = isDeadWG( id, wire_in_cluster.at(0) -1 ); 
+	bool deadWG_right = isDeadWG( id, wire_in_cluster.at(wire_in_cluster.size()-1) + 1); 
 	short int aDeadWG = 0;
 	if(!deadWG_left && !deadWG_right){
 	  aDeadWG = 0;
@@ -75,99 +138,67 @@ std::vector<CSCWireHit> CSCHitFromWireOnly::runWire( const CSCDetId& id, const C
 	    aDeadWG = wire_in_cluster.at(wire_in_cluster.size()-1) + 1;
 	  }
 	}
-       // BEFORE: Set time bins for wire hit as the time bins of the central wire digi, lower of central two if an even number of digis.
-       // NEW: Save time bin on for each wire group in wire cluster (wire cluster -> wire hit)
-      std::vector <int> timeBinsOn; timeBinsOn.clear();//=wire_cluster[n_wgroup/2].getTimeBinsOn();
-      for (int wg = 0; wg < n_wgroup; wg++) {timeBinsOn.push_back(wire_cluster[wg].getTimeBin());}
-      //CSCWireHit whit(id, whit_pos, wire_in_clusterAndBX, theTime, isDeadWGAround, timeBinsOn );
-      CSCWireHit whit(id, whit_pos, wire_in_clusterAndBX, theTime, aDeadWG, timeBinsOn );
-
-      if (!useReducedWireTime) {
-        hitsInLayer.push_back( whit );
-      }
-      else if (theTime >= wireTimeWindow_low && theTime <= wireTimeWindow_high) {
-        hitsInLayer.push_back( whit );	
-      }
-
-      makeWireCluster( wdigi );
-      n_wgroup = 1;
-      } else {
-	      n_wgroup++;
+	std::vector <int> timeBinsOn; timeBinsOn.clear();//=wire_cluster[n_wgroup/2].getTimeBinsOn();
+	for (int wg = 0; wg < n_wgroup; wg++) timeBinsOn.push_back(wire_cluster[wg].getTimeBin());
+	/// BX
+	//CSCWireHit whit(id, wire_hit_position, wire_in_clusterAndBX, theTime, isDeadWGAround, timeBinsOn );
+	CSCWireHit whit(id, wire_hit_position, wire_in_clusterAndBX, theTime, aDeadWG, timeBinsOn );
+	
+	if (!useReducedWireTime) {
+	  hitsInLayer.push_back( whit );
+	} 
+	else if (theTime >= wireTimeWindow_low && theTime <= wireTimeWindow_high) {
+	  hitsInLayer.push_back( whit );
+	}
+	
+	n_wgroup++;
       }
     }
-    // Don't forget to fill last wire hit !!!
-    if ( rwired.second - it == 1) {           
-      float whit_pos = findWireHitPosition();
-      bool deadWG_left = isDeadWG( id, wire_in_cluster.at(0) -1 ); 
-      bool deadWG_right = isDeadWG( id, wire_in_cluster.at(wire_in_cluster.size()-1) + 1); 
-      short int aDeadWG = 0;
-      if(!deadWG_left && !deadWG_right){
-        aDeadWG = 0;
-      }
-      else if(deadWG_left && deadWG_right){
-        aDeadWG = 255;
-      }
-      else{
-        if(deadWG_left){
-          aDeadWG = wire_in_cluster.at(0) -1;
-        }
-        else{
-          aDeadWG = wire_in_cluster.at(wire_in_cluster.size()-1) + 1;
-        }
-      }
-      std::vector <int> timeBinsOn; timeBinsOn.clear();//=wire_cluster[n_wgroup/2].getTimeBinsOn();
-      for (int wg = 0; wg < n_wgroup; wg++) {timeBinsOn.push_back(wire_cluster[wg].getTimeBin());}
-      /// BX
-      //CSCWireHit whit(id, whit_pos, wire_in_clusterAndBX, theTime, isDeadWGAround, timeBinsOn );
-      CSCWireHit whit(id, whit_pos, wire_in_clusterAndBX, theTime, aDeadWG, timeBinsOn );
-
-      if (!useReducedWireTime) {
-        hitsInLayer.push_back( whit );
-      } 
-      else if (theTime >= wireTimeWindow_low && theTime <= wireTimeWindow_high) {
-        hitsInLayer.push_back( whit );
-      }
-
-      n_wgroup++;
-    }
-  }
-
-/// Print statement (!!!to control WireHit content!!!) BX
+  
+  /// Print statement (!!!to control WireHit content!!!) BX
   /*
-      for(std::vector<CSCWireHit>::const_iterator itWHit=hitsInLayer.begin(); itWHit!=hitsInLayer.end(); ++itWHit){
-         (*itWHit).print(); 
-         }  
+    for(std::vector<CSCWireHit>::const_iterator itWHit=hitsInLayer.begin(); itWHit!=hitsInLayer.end(); ++itWHit){
+    (*itWHit).print(); 
+    }  
   */
-
+  
   return hitsInLayer;
 }
 
 
-void CSCHitFromWireOnly::makeWireCluster(const CSCWireDigi & digi) {
+void CSCHitFromWireOnly::makeWireCluster(const CSCWireDigi & digi) 
+{
   wire_cluster.clear();
   wire_in_cluster.clear();
   wire_in_clusterAndBX.clear(); /// BX to wire
-  theLastChannel  = digi.getWireGroup();
-  theTime         = digi.getTimeBin();
+
+  theLastChannel   = digi.getWireGroup();
+  theTime          = digi.getTimeBin();
+  
   wire_cluster.push_back( digi );
 }
 
 
-bool CSCHitFromWireOnly::addToCluster(const CSCWireDigi & digi) {
+bool CSCHitFromWireOnly::addToCluster(const CSCWireDigi & digi) 
+{
 
   
   int iwg = digi.getWireGroup();
   
-  if ( iwg == theLastChannel ){
-    return true;  // Same wire group but different tbin -> ignore
-  }
-  else{
-    if ( (iwg == theLastChannel+1) && (abs(digi.getTimeBin()-theTime)<= deltaT) ) {
-      theLastChannel = iwg;
-      wire_cluster.push_back( digi );
-      return true;
+  if ( iwg == theLastChannel )
+    {
+      return true;  // Same wire group but different tbin -> ignore
     }
-  }
+
+  else
+    {
+      if ( (iwg == theLastChannel+1) && (abs(digi.getTimeBin()-theTime)<= deltaT) ) 
+	{
+	  theLastChannel = iwg;
+	  wire_cluster.push_back( digi );
+	  return true;
+	}
+    }
   
   return false;
 }
@@ -177,25 +208,30 @@ bool CSCHitFromWireOnly::addToCluster(const CSCWireDigi & digi) {
  *
  * This position is expressed in terms of wire #... is a float since it may be a fraction.
  */
-float CSCHitFromWireOnly::findWireHitPosition() {
+float CSCHitFromWireOnly::findWireHitPosition() 
+{
   
   // Again use center of mass to determine position of wire hit
   // To do so, need to know wire spacing and # of wires
   
   float y = 0.0;
+  //  std::cout<<"   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!   find wire hit positions   " << std::endl;
+  for ( unsigned i = 0; i < wire_cluster.size(); ++i ) 
+    {
+      CSCWireDigi wdigi = wire_cluster[i];
+      int wgroup = wdigi.getWireGroup();
+
+      //  std::cout<<" loop over the wirre clustere group  ??????????????  "<<    i   << std::endl;
+      //      std::cout<<"wire group   " << wgroup << std::endl;
+      wire_in_cluster.push_back( wgroup );
+      int wgroupAndBX = wdigi.getBXandWireGroup();   /// BX to WireHit
+      //std::cout << " wgroupAndBX: " << std::hex << wgroupAndBX << std::dec << std::endl;
+      wire_in_clusterAndBX.push_back( wgroupAndBX ); /// BX to WireHit
+      y += float( wgroup );
+    }       
   
-  for ( unsigned i = 0; i < wire_cluster.size(); ++i ) {
-    CSCWireDigi wdigi = wire_cluster[i];
-    int wgroup = wdigi.getWireGroup();
-    wire_in_cluster.push_back( wgroup );
-    int wgroupAndBX = wdigi.getBXandWireGroup(); /// BX to WireHit
-    //std::cout << " wgroupAndBX: " << std::hex << wgroupAndBX << std::dec << std::endl;
-    wire_in_clusterAndBX.push_back( wgroupAndBX ); /// BX to WireHit
-    y += float( wgroup );
-  }       
-
   float wiregpos = y /wire_cluster.size() ;
-
+  //  std::cout<<"   >>>>>>>>>>>>>>>>>>>>>>>  wire position   "<<  wiregpos << std::endl;
   return wiregpos;
 
 }

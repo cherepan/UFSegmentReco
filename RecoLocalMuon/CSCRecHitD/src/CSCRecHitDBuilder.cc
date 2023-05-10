@@ -83,13 +83,15 @@ void CSCRecHitDBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
     if ( layer_idx == 0 ) {
       old_id = sDetId;
     }
-
+  
 
     CSCDetId compId = sDetId;
     CSCWireDigiCollection::Range rwired = wiredc->get( sDetId );
+
     // Skip if no wire digis in this layer
     // But for ME11, real wire digis are labelled as belonging to ME1b, so that's where ME1a must look
     // (We try ME1a - above - anyway, because simulated wire digis are labelled as ME1a.)
+
     if ( rwired.second == rwired.first ) {
       if ( sDetId.station()!=1 || sDetId.ring()!=4 ){
         continue; // not ME1a, skip to next layer

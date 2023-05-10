@@ -18,13 +18,13 @@
 
 CSCSegmentProducer::CSCSegmentProducer(const edm::ParameterSet& pas) : iev(0) {
 	
-    m_token = consumes<CSCRecHit2DCollection>( pas.getParameter<edm::InputTag>("inputObjects") );
-    m_token_wire = consumes<CSCWireHitCollection>( pas.getParameter<edm::InputTag>("inputObjects") );
-    m_token_strip = consumes<CSCStripHitCollection>( pas.getParameter<edm::InputTag>("inputObjects") );
+    m_token         = consumes<CSCRecHit2DCollection>( pas.getParameter<edm::InputTag>("inputObjects") );
+    m_token_wire    = consumes<CSCWireHitCollection> ( pas.getParameter<edm::InputTag>("inputObjects") );
+    m_token_strip   = consumes<CSCStripHitCollection>( pas.getParameter<edm::InputTag>("inputObjects") );
     segmentBuilder_ = new CSCSegmentBuilder(pas); // pass on the PS
 
     recoConditions_    = new CSCRecoConditions( pas ); // access to conditions data
-    segmentBuilder_->setConditions( recoConditions_ ); // pass down to who needs access
+    segmentBuilder_    ->setConditions( recoConditions_ ); // pass down to who needs access
 
   	// register what this produces
     produces<CSCSegmentCollection>();
@@ -53,10 +53,10 @@ void CSCSegmentProducer::produce(edm::Event& ev, const edm::EventSetup& setup) {
 	
     // get the collection of CSCRecHit2D
     edm::Handle<CSCRecHit2DCollection> cscRecHits;
-    edm::Handle<CSCWireHitCollection> cscWireHits;
+    edm::Handle<CSCWireHitCollection>  cscWireHits;
     edm::Handle<CSCStripHitCollection> cscStripHits;
-    ev.getByToken( m_token, cscRecHits);
-    ev.getByToken( m_token_wire, cscWireHits);
+    ev.getByToken( m_token,       cscRecHits);
+    ev.getByToken( m_token_wire,  cscWireHits);
     ev.getByToken( m_token_strip, cscStripHits);
 
 

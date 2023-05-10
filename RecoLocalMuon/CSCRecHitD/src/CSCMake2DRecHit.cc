@@ -67,6 +67,9 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
   int Nwires1 = layergeom_->numberOfWiresPerGroup( wg_left );
   int Nwires2 = layergeom_->numberOfWiresPerGroup( wg_right );
 
+
+  //  std::cout<<"   CSCMake2DRecHit   Nwires1/2   "<< Nwires1 << "   "<< Nwires2 <<std::endl;
+
   float Mwire1 = layergeom_->middleWireOfGroup( wg_left );
   float Mwire2 = layergeom_->middleWireOfGroup( wg_right );
   

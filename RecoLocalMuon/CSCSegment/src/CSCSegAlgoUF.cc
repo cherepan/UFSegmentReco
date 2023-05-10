@@ -86,14 +86,14 @@ std::vector<CSCSegment> CSCSegAlgoUF::run(const CSCChamber* aChamber, const Cham
                                                                       const ChamberWireHitContainer& wirehits,
                                                                       const ChamberStripHitContainer& striphits,
                                                                       CSCRecoConditions* reco){
- setConditions(reco);
+  setConditions(reco);
   
   theChamber = aChamber;
-//  std::cout << theChamber->id() << std::endl;
-  // get number of wire groups and strips for this chamber
+  //  std::cout << theChamber->id() << std::endl;
+  //  get number of wire groups and strips for this chamber
   nWireGroups = theChamber->layer(1)->geometry()->numberOfWireGroups();
-  nStrips = theChamber->layer(1)->geometry()->numberOfStrips();
-  //std::cout << "This chamber has " << nWireGroups << " wire groups and " << nStrips << " strips " << std::endl;
+  nStrips     = theChamber->layer(1)->geometry()->numberOfStrips();
+  std::cout << "   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! This chamber has " << nWireGroups << " wire groups and " << nStrips << " strips " << std::endl;
   theStation = theChamber->id().station();
   theRing = theChamber->id().ring();
   if (theStation==1 && (theRing == 1 || theRing==4) )
@@ -124,15 +124,15 @@ std::vector<CSCSegment> CSCSegAlgoUF::buildSegments(const ChamberWireHitContaine
   TH2F* wHitsPerChamber = new TH2F("wHitsPerChamber","",nWireGroups,0,nWireGroups,6,0,6);
   TH2F* sHitsPerChamber = new TH2F("sHitsPerChamber","",2*nStrips+1,0,2*nStrips+1,6,0,6); // half strip stagger at 1,3,5 layer
 
-  FillWireMatrix(wHitsPerChamber, wirehits); TH2F* wHitsPerChamber_c = (TH2F*)wHitsPerChamber->Clone("wHitsPerChamber_c");
+  FillWireMatrix(wHitsPerChamber, wirehits);   TH2F* wHitsPerChamber_c = (TH2F*)wHitsPerChamber->Clone("wHitsPerChamber_c");
   FillStripMatrix(sHitsPerChamber, striphits); TH2F* sHitsPerChamber_c = (TH2F*)sHitsPerChamber->Clone("sHitsPerChamber_c");
 
-//  WriteTH2F(wHitsPerChamber);
-//  WriteTH2F(sHitsPerChamber);
+  //  WriteTH2F(wHitsPerChamber);
+  //  WriteTH2F(sHitsPerChamber);
 
   std::list<CSCWireSegment> wireSegs;
-  ScanForWireSeg(wHitsPerChamber, wireSegs, 6, false);
-  ScanForWireSeg(wHitsPerChamber, wireSegs, 5, false);
+  ScanForWireSeg(wHitsPerChamber, wireSegs, 6, true);
+  ScanForWireSeg(wHitsPerChamber, wireSegs, 5, true);
   ScanForWireSeg(wHitsPerChamber, wireSegs, 4, false);
   ScanForWireSeg(wHitsPerChamber, wireSegs, 3, false);
 
@@ -161,8 +161,9 @@ if (int(wireSegs.size()) == 1) {
                                     ", nStripSegments: " << stripSegs.size() << 
                                     ", nSegments: " << wireSegs.size() * stripSegs.size() << std::endl;
 
-     WriteTH2F(wHitsPerChamber_c);
-     WriteTH2F(sHitsPerChamber_c);
+  WriteTH2F(wHitsPerChamber_c);
+  std::cout<<"   strips   " << std::endl;
+  WriteTH2F(sHitsPerChamber_c);
 
 //std::cout<<std::endl;
 
@@ -200,20 +201,21 @@ if (int(wireSegs.size()) == 1) {
           CSCWireSegment wireSeg = *wIt;
           CSCStripSegment stripSeg = *sIt;
 
-//          if (isME11 && theRing == 4 && wireSeg.keyWG() > 20 ) continue;
-//          if (isME11 && theRing == 1 && wireSeg.keyWG() < 9 ) continue;
-
-//std::cout << "keyWG: " << wIt->keyWG() << ", nLayer: " << wIt->nLayersWithHits() << std::endl;
-//std::cout << "keyHS: " << sIt->keyHalfStrip() << ", nLayer: " << sIt->nLayersWithHits() << std::endl;
+	  //          if (isME11 && theRing == 4 && wireSeg.keyWG() > 20 ) continue;
+	  //          if (isME11 && theRing == 1 && wireSeg.keyWG() < 9 ) continue;
+	  
+	  //          std::cout << "keyWG: " << wIt->keyWG() << ", nLayer: " << wIt->nLayersWithHits() << std::endl;
+	  //          std::cout << "keyHS: " << sIt->keyHalfStrip() << ", nLayer: " << sIt->nLayersWithHits() << std::endl;
 
           int wHitsFromWSeg[6] = {}; GetWireHitFromWireSeg(wireSeg, wirehits, wHitsFromWSeg);
           int sHitsFromSSeg[6] = {}; GetStripHitFromStripSeg(stripSeg, striphits, sHitsFromSSeg);
           std::vector<CSCRecHit2D> csc2DRecHits;
-          for (int k = 0; k < 6; k++) {
+          for (int k = 0; k < 6; k++) 
+	    {
               if (wHitsFromWSeg[k] == -1 || sHitsFromSSeg[k] == -1) continue;
               const CSCWireHit* cscwirehit = wirehits[wHitsFromWSeg[k]]; 
               const CSCStripHit* cscstriphit = striphits[sHitsFromSSeg[k]];
-
+	      
               const CSCWireHit&  wirehit  = *cscwirehit;
               const CSCStripHit& striphit = *cscstriphit;
               const CSCDetId&    detId    = CSCDetId(theChamber->id().endcap(),
@@ -222,20 +224,27 @@ if (int(wireSegs.size()) == 1) {
                                                theChamber->id().chamber(), k+1);
 
               const CSCLayer* cscLayer = theChamber->layer(k+1);
-//std::cout << "wire pos: " << cscwirehit->wHitPos() << ", strip pos: " << cscstriphit->sHitPos() << std::endl;
+	      //std::cout << "wire pos: " << cscwirehit->wHitPos() << ", strip pos: " << cscstriphit->sHitPos() << std::endl;
 
               CSCRecHit2D rechit = make2DHits_->hitFromStripAndWire(detId, cscLayer, wirehit, striphit );
-std::cout << rechit << std::endl;
+	      //	      std::cout << " ============================================   CSC UF Algo    print out the rechit              " <<rechit << std::endl;
               if (make2DHits_->isHitInFiducial( cscLayer, rechit )) csc2DRecHits.push_back(rechit);
-              }
-std::cout << csc2DRecHits.size() << " RHs survived fiducial cut" << std::endl;
+	  }
+	  std::cout << csc2DRecHits.size() << " RHs survived fiducial cut" << std::endl;
               ChamberHitContainer csc2DRecHits_p;
               for (std::vector<CSCRecHit2D>::const_iterator it = csc2DRecHits.begin(); it != csc2DRecHits.end(); it++)
                   { csc2DRecHits_p.push_back(&(*it)); }
 
               if (int(csc2DRecHits_p.size()) < 3 ) continue; // why number of hits is 0 ??? or smaller than3, wire and strip hit not found ???
 
-// borrow from ST
+
+
+
+
+
+
+
+// borrow from ST  //  What this part of code is doing ??? 
     CSCCondSegFit* segfit = new CSCCondSegFit( pset(), theChamber, csc2DRecHits_p );
     condpass1 = false;
     condpass2 = false;
@@ -311,7 +320,7 @@ std::cout << tempSeg << std::endl;
                         }
 */
               }
-            }
+  }
 
 //  std::cout << "return " << segments.size() << " 2D segments" << std::endl;
 //  std::cout << std::endl;
@@ -327,12 +336,15 @@ std::cout << tempSeg << std::endl;
 }
 
 
+
+
+
 void CSCSegAlgoUF::WriteTH2F(TH2F* hist) {
      for (int i = 1; i < hist->GetNbinsY()+1; i++) {
          for (int j = 1; j < hist->GetNbinsX()+1; j++) {
 
              if (hist->GetBinContent(j,i)==0)
-                {std::cout << "-";} else {std::cout << 1;}
+	       {std::cout << "-";} else {std::cout << "*";}
 
              }
          std::cout << std::endl;
@@ -341,6 +353,9 @@ void CSCSegAlgoUF::WriteTH2F(TH2F* hist) {
 //     std::cout << std::endl;
 
 }
+
+
+
 
 
 void CSCSegAlgoUF::FillWireMatrix(TH2F* whitsMatrix, ChamberWireHitContainer whits) {
@@ -358,6 +373,9 @@ void CSCSegAlgoUF::FillWireMatrix(TH2F* whitsMatrix, ChamberWireHitContainer whi
      double* rows_a = &rows_v[0]; double* cols_a = &cols_v[0]; double* data_a = &data_v[0];
      whitsMatrix->FillN(int(rows_v.size()), cols_a, rows_a, data_a);     
 }
+
+
+
 
 
 
@@ -379,9 +397,10 @@ void CSCSegAlgoUF::FillStripMatrix(TH2F* shitsMatrix, ChamberStripHitContainer s
                cols_v.push_back(2*sp-2); //cols_v.push_back(2*sp-1);
 //std::cout << "layer: " << sLayer << ", half strip: " << 2*sp-2 << std::endl;
                }
-            if (!isME11 && (sLayer == 1 || sLayer == 3 || sLayer == 5) ) {
-               cols_v.push_back(2*sp-1); //cols_v.push_back(2*sp);
-               }
+            if (!isME11 && (sLayer == 1 || sLayer == 3 || sLayer == 5) ) 
+	      {
+		cols_v.push_back(2*sp-1); //cols_v.push_back(2*sp);
+	      }
 
             rows_v.push_back(sLayer-1); //rows_v.push_back(sLayer-1);
             data_v.push_back(1); //data_v.push_back(1);
@@ -420,6 +439,10 @@ void CSCSegAlgoUF::FillStripMatrix(TH2F* shitsMatrix, ChamberStripHitContainer s
      double* rows_a = &rows_v[0]; double* cols_a = &cols_v[0]; double* data_a = &data_v[0];
      shitsMatrix->FillN(int(rows_v.size()), cols_a, rows_a, data_a);
 }
+
+
+
+
 
 
 void CSCSegAlgoUF::ScanForWireSeg(TH2F* wHitsPerChamber, std::list<CSCWireSegment>& wireSegs, int nLayer, bool debug) {
@@ -465,15 +488,15 @@ void CSCSegAlgoUF::ScanForWireSeg(TH2F* wHitsPerChamber, std::list<CSCWireSegmen
              if (thisNLayer != nLayer) {delete wirePattern; continue;} 
 
              if (int(wireSegs.size()) == 0 ) {
-//std::cout << "wPattern: " << std::endl; WriteTH2F(wirePattern);
+	       std::cout << "wPattern: " << std::endl; WriteTH2F(wirePattern);
 //std::cout << std::endl;
                 wireSegs.push_back( CSCWireSegment(thisKeyWG, thisNLayer, wirePattern) );
                 wHitsPerChamber->Add(wirePattern,-1); 
                 delete wirePattern; continue;
                 }
 
-             CSCWireSegment lastSeg = wireSegs.back();
-             int lastKeyWG =  lastSeg.keyWG();
+             CSCWireSegment lastSeg =  wireSegs.back();
+             int lastKeyWG          =  lastSeg.keyWG();
 //std::cout << "wPattern: " << std::endl; WriteTH2F(wirePattern);
 //std::cout << std::endl;
              CSCWireSegment tmpWireSeg = CSCWireSegment(thisKeyWG, thisNLayer, wirePattern);
@@ -497,6 +520,9 @@ void CSCSegAlgoUF::ScanForWireSeg(TH2F* wHitsPerChamber, std::list<CSCWireSegmen
 
          } // WG loop
 }
+
+
+
 
 
 void CSCSegAlgoUF::ScanForStripSeg(TH2F* sHitsPerChamber, std::list<CSCStripSegment>& stripSegs, int nLayer) {
@@ -646,11 +672,13 @@ void CSCSegAlgoUF::GetWireHitFromWireSeg(CSCWireSegment wireSeg, ChamberWireHitC
 }
 
 
+
+
 void CSCSegAlgoUF::GetStripHitFromStripSeg(CSCStripSegment stripSeg, ChamberStripHitContainer shits, int* stripHitIndex) {
 
 //  double keySH = ceil(stripSeg.keyHalfStrip()/2.0);
 //std::cout << "keySH: " << keySH << std::endl;
-  double comHitLow = stripSeg.comHitLow(isME11);
+  double comHitLow  = stripSeg.comHitLow(isME11);
   double comHitHigh = stripSeg.comHitHigh(isME11);
 //std::cout << "low: " << comHitLow << ", high: " << comHitHigh << std::endl;
 

@@ -105,6 +105,7 @@ private:
     /**
      * Flag hits on segment as used
      */
+
     void flagHitsAsUsed(const ChamberHitContainer& rechitsInChamber,BoolContainer& used) const;
 	
     /// Utility functions 	

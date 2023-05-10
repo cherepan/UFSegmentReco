@@ -49,7 +49,7 @@ public:
 
     typedef std::vector<int> LayerIndex;
     typedef std::vector<const CSCRecHit2D*> ChamberHitContainer;
-    typedef std::vector<const CSCWireHit*> ChamberWireHitContainer;
+    typedef std::vector<const CSCWireHit*>  ChamberWireHitContainer;
     typedef std::vector<const CSCStripHit*> ChamberStripHitContainer;
     typedef std::vector<const CSCRecHit2D*>::const_iterator ChamberHitContainerCIt;
 
@@ -69,20 +69,22 @@ public:
      * Build track segments in this chamber (this is where the actual
      * segment-building algorithm hides.)
      */
-    std::vector<CSCSegment> buildSegments(const ChamberHitContainer& rechits);
-    std::vector<CSCSegment> buildSegments(const ChamberWireHitContainer& wirehits, 
-                                          const ChamberStripHitContainer& striphits);
 
-    void FillWireMatrix(TH2F* whitsMatrix, ChamberWireHitContainer whits);
+    std::vector<CSCSegment> buildSegments(const ChamberHitContainer      & rechits);
+    std::vector<CSCSegment> buildSegments(const ChamberWireHitContainer  & wirehits, 
+                                          const ChamberStripHitContainer & striphits);
+
+    void FillWireMatrix( TH2F* whitsMatrix, ChamberWireHitContainer whits);
     void FillStripMatrix(TH2F* shitsMatrix, ChamberStripHitContainer shits);
 
-    void ScanForWireSeg(TH2F* wHitsPerChamber, std::list<CSCWireSegment>& wireSegs, int nLayer, bool debug);
+    void ScanForWireSeg( TH2F* wHitsPerChamber, std::list<CSCWireSegment>& wireSegs,   int nLayer, bool debug);
     void ScanForStripSeg(TH2F* sHitsPerChamber, std::list<CSCStripSegment>& stripSegs, int nLayer);
 
-    void GetWireHitFromWireSeg(CSCWireSegment wireSeg, ChamberWireHitContainer whits, int* wireHitIndex);
+    void GetWireHitFromWireSeg  (CSCWireSegment  wireSeg,  ChamberWireHitContainer  whits, int* wireHitIndex);
     void GetStripHitFromStripSeg(CSCStripSegment stripSeg, ChamberStripHitContainer shits, int* stripHitIndex);
 
     CSCSegment doPrune(ChamberHitContainer rechits, CSCSegment oldSeg);
+
     std::vector< CSCSegment > prune_bad_hits(const CSCChamber* aChamber, std::vector< CSCSegment > & segments);
 
     void WriteTH2F(TH2F* hist);
@@ -115,6 +117,7 @@ private:
     /// Utility functions 
     // Could be static at the moment, but in principle one
     // might like CSCSegmentizer-specific behaviour?
+
     bool areHitsCloseInR(const CSCRecHit2D* h1, const CSCRecHit2D* h2) const;
     bool areHitsCloseInGlobalPhi(const CSCRecHit2D* h1, const CSCRecHit2D* h2) const;
     bool isHitNearSegment(const CSCRecHit2D* h) const;

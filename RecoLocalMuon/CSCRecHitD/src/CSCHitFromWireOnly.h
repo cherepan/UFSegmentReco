@@ -61,12 +61,12 @@ class CSCHitFromWireOnly
  private:
   bool isDeadWG(const CSCDetId& id, int WG); 
 
-  std::vector<CSCWireDigi> wire_cluster;
-  std::vector<int> wire_in_cluster;
-  std::vector<float> wire_spacing;
+  std::vector<CSCWireDigi>   wire_cluster;
+  std::vector<int>           wire_in_cluster;
+  std::vector<float>         wire_spacing;
   int theTime;
   int theLastChannel;
-  std::vector<int> wire_in_clusterAndBX; /// To fill BX + wiregroup in CSCWireHit
+  std::vector<int>           wire_in_clusterAndBX; /// To fill BX + wiregroup in CSCWireHit
   
   int deltaT;
   bool useReducedWireTime;

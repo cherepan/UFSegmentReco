@@ -74,7 +74,7 @@ void  CSCRecHitDProducer::produce( edm::Event& ev, const edm::EventSetup& setup 
   ev.getByToken( w_token, wireDigis);
 
   // Create empty collection of rechits  
-  auto oc = std::make_unique<CSCRecHit2DCollection>();
+  auto oc   = std::make_unique<CSCRecHit2DCollection>();
   auto oc_w = std::make_unique<CSCWireHitCollection>();
   auto oc_s = std::make_unique<CSCStripHitCollection>();
 
@@ -86,6 +86,10 @@ void  CSCRecHitDProducer::produce( edm::Event& ev, const edm::EventSetup& setup 
   LogTrace("CSCRecHit")<< "[CSCRecHitDProducer] putting collection of " << oc_w->size() << " wire hits into event.";
   LogTrace("CSCRecHit")<< "[CSCRecHitDProducer] putting collection of " << oc_s->size() << " strip hits into event.";
 
+
+  //  std::cout<<" # RecHits   " << oc->size() << std::endl;//
+  //std::cout<<" # Wire Hits   " << oc_w->size() << std::endl;
+  // std::cout<<" # StripHits   " << oc_s->size() << std::endl;
 /*
   std::cout << "[CSCRecHitDProducer] putting collection of " << oc->size() << " rechits into event." << std::endl;
   std::cout << "[CSCRecHitDProducer] putting collection of " << oc_w->size() << " wire hits into event." << std::endl;
