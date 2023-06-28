@@ -23,6 +23,10 @@
 
 #include <DataFormats/CSCDigi/interface/CSCStripDigiCollection.h>
 #include <DataFormats/CSCDigi/interface/CSCWireDigiCollection.h>
+#include <Geometry/Records/interface/MuonGeometryRecord.h>
+#include <Geometry/CSCGeometry/interface/CSCGeometry.h>
+
+
 
 class CSCRecHitDBuilder; 
 class CSCRecoConditions;
@@ -51,6 +55,8 @@ public:
 
   edm::EDGetTokenT<CSCStripDigiCollection> s_token;
   edm::EDGetTokenT<CSCWireDigiCollection> w_token;
+  edm::ESGetToken<CSCGeometry, MuonGeometryRecord> cscGeom_token;
+
 };
 
 #endif

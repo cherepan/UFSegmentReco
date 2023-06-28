@@ -18,7 +18,7 @@
 #include <DataFormats/CSCRecHit/interface/CSCWireHitCollection.h>
 #include <DataFormats/CSCRecHit/interface/CSCStripHitCollection.h>
 #include <DataFormats/CSCRecHit/interface/CSCSegmentCollection.h>
-#include <RecoLocalMuon/CSCSegment/src/CSCRecoConditions.h>
+#include "CSCRecoConditions.h"
 
 #include <FWCore/ParameterSet/interface/ParameterSet.h>
 

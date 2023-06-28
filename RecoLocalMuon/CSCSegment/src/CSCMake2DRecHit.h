@@ -15,7 +15,10 @@
 #include <DataFormats/CSCRecHit/interface/CSCWireHit.h>
 //#include <RecoLocalMuon/CSCRecHitD/src/CSCStripHit.h>
 #include "DataFormats/CSCRecHit/interface/CSCStripHit.h"
-#include "RecoLocalMuon/CSCRecHitD/src/CSCRecoConditions.h"
+
+
+
+#include "CSCRecoConditions.h"
 
 #include "CSCFindPeakTime.h"
 

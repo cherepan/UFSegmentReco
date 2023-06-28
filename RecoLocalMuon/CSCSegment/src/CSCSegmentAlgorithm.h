@@ -18,7 +18,7 @@
 #include <DataFormats/CSCRecHit/interface/CSCStripHitCollection.h>
 #include <DataFormats/CSCRecHit/interface/CSCSegment.h>
 #include <Geometry/CSCGeometry/interface/CSCChamber.h>
-#include "RecoLocalMuon/CSCRecHitD/src/CSCRecoConditions.h"
+#include "CSCRecoConditions.h"
 
 #include <FWCore/Framework/interface/Frameworkfwd.h>
 #include <vector>

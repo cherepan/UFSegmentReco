@@ -7,7 +7,8 @@
 
  */
 
-#include <RecoLocalMuon/CSCSegment/src/CSCSegmentAlgorithm.h>
+//#include <RecoLocalMuon/CSCSegment/src/CSCSegmentAlgorithm.h>
+#include "CSCSegmentAlgorithm.h"
 
 #include <DataFormats/CSCRecHit/interface/CSCRecHit2D.h>
 #include <DataFormats/CSCRecHit/interface/CSCWireHit.h>

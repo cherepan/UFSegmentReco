@@ -2,9 +2,11 @@
  *
  */
 
+
+#include "CSCRecoConditions.h"
 #include <RecoLocalMuon/CSCSegment/src/CSCSegmentProducer.h>
 #include <RecoLocalMuon/CSCSegment/src/CSCSegmentBuilder.h>
-#include <RecoLocalMuon/CSCRecHitD/src/CSCRecoConditions.h>
+
 
 #include <DataFormats/Common/interface/Handle.h>
 #include <FWCore/Framework/interface/ESHandle.h>
@@ -23,7 +25,7 @@ CSCSegmentProducer::CSCSegmentProducer(const edm::ParameterSet& pas) : iev(0) {
     m_token_strip   = consumes<CSCStripHitCollection>( pas.getParameter<edm::InputTag>("inputObjects") );
     segmentBuilder_ = new CSCSegmentBuilder(pas); // pass on the PS
 
-    recoConditions_    = new CSCRecoConditions( pas ); // access to conditions data
+    recoConditions_    = new CSCRecoConditions( pas,  consumesCollector() ); // access to conditions data
     segmentBuilder_    ->setConditions( recoConditions_ ); // pass down to who needs access
 
   	// register what this produces
