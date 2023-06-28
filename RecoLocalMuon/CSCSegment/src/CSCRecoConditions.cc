@@ -1,13 +1,11 @@
-#include "CSCRecoConditions.h"
+#include <RecoLocalMuon/CSCSegment/src/CSCRecoConditions.h>
 #include <CondFormats/CSCObjects/interface/CSCChannelTranslator.h>
 #include <FWCore/MessageLogger/interface/MessageLogger.h>
 #include <iostream>
 
-CSCRecoConditions::CSCRecoConditions( const edm::ParameterSet & ps ) : theConditions( ps ) {
-}
+CSCRecoConditions::CSCRecoConditions( const edm::ParameterSet & ps ) : theConditions( ps ) {}
 
-CSCRecoConditions::~CSCRecoConditions() {
-}
+CSCRecoConditions::~CSCRecoConditions() {}
 
 void CSCRecoConditions::initializeEvent( const edm::EventSetup& es ) {
   theConditions.initializeEvent( es );

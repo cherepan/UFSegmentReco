@@ -19,10 +19,8 @@
 #include <iostream>
 #include <string>
 //#include "TMatrixDSparse.h"
-#include "RecoLocalMuon/CSCRecHitD/src/CSCMake2DRecHit.h"
-#include "RecoLocalMuon/CSCRecHitD/src/CSCXonStrip_MatchGatti.h"
-#include "RecoLocalMuon/CSCRecHitD/src/CSCFindPeakTime.h"
-#include "RecoLocalMuon/CSCRecHitD/src/CSCRecoConditions.h"
+
+
 //#include "RecoLocalMuon/CSCRecHitD/src/HardCodedCorrectionInitialization.cc"
 #include "CommonTools/Statistics/interface/ChiSquaredProbability.h"
 #include "CSCSegAlgoST.h"

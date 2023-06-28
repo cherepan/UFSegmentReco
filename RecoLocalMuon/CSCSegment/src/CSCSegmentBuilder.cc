@@ -20,6 +20,8 @@
 #include <FWCore/Utilities/interface/Exception.h>
 #include <FWCore/MessageLogger/interface/MessageLogger.h> 
 
+
+
 CSCSegmentBuilder::CSCSegmentBuilder(const edm::ParameterSet& ps) : geom_(0) {
     
     // The algo chosen for the segment building
@@ -55,20 +57,32 @@ CSCSegmentBuilder::CSCSegmentBuilder(const edm::ParameterSet& ps) : geom_(0) {
             
     for (size_t j=0; j<chType.size(); ++j) 
       {
-	algoMap[chType[j]] = CSCSegmentBuilderPluginFactory::get()->
-	  create(algoName, segAlgoPSet[algoToType[j]-1]);
+	//	algoMap[chType[j]] = CSCSegmentBuilderPluginFactory::get()->create(algoName, segAlgoPSet[algoToType[j]-1]);  
+	algoMap.emplace(chType[j], CSCSegmentBuilderPluginFactory::get()->create(algoName, segAlgoPSet[algoToType[j] - 1])); // CMSSW_12_4_4 
 	edm::LogVerbatim("CSCSegment|CSC")<< "using algorithm #" << algoToType[j] << " for chamber type " << chType[j];
       }
 }
 
+CSCSegmentBuilder::~CSCSegmentBuilder() = default; 
+
+
+/*
 CSCSegmentBuilder::~CSCSegmentBuilder() {
   //
   // loop on algomap and delete them
   //
-  for (std::map<std::string, CSCSegmentAlgorithm*>::iterator it = algoMap.begin();it != algoMap.end(); it++){
-    delete ((*it).second);
-  }
+
+
+  //  for (std::map<std::string, std::unique_ptr<CSCSegmentAlgorithm> >::iterator it = algoMap.begin();it != algoMap.end(); it++)    delete *(*it).second; 
+  for (std::map<std::string, std::unique_ptr<CSCSegmentAlgorithm> >::iterator it = algoMap.begin();it != algoMap.end(); it++)    delete it->second; 
+  
 }
+*/
+
+
+
+
+
 
 void CSCSegmentBuilder::build(const CSCRecHit2DCollection* recHits,
                               const CSCWireHitCollection*  wireHits,

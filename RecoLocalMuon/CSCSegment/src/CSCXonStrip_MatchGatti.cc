@@ -3,7 +3,7 @@
 //---- Large part is copied from RecHitB
 //---- author: Stoyan Stoynev - NU
 
-#include <RecoLocalMuon/CSCRecHitD/src/CSCXonStrip_MatchGatti.h>
+#include <RecoLocalMuon/CSCSegment/src/CSCXonStrip_MatchGatti.h>
 #include <RecoLocalMuon/CSCRecHitD/src/CSCStripHit.h>
 
 #include <Geometry/CSCGeometry/interface/CSCLayer.h>

@@ -22,7 +22,7 @@
 
 #include "CSCSegAlgoPreClustering.h"
 #include "CSCSegAlgoShowering.h"
-
+#include <RecoLocalMuon/CSCRecHitD/src/CSCRecoConditions.h>
 #include <algorithm>
 #include <cmath>
 #include <iostream>

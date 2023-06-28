@@ -6,7 +6,6 @@
 #include "DataFormats/CSCRecHit/interface/CSCStripHit.h"
 //#include <RecoLocalMuon/CSCRecHitD/src/CSCWireHit.h>
 #include <DataFormats/CSCRecHit/interface/CSCWireHit.h>
-#include "CSCRecoConditions.h"
  
 #include <DataFormats/CSCRecHit/interface/CSCRecHit2D.h>
 #include <DataFormats/MuonDetId/interface/CSCDetId.h>
