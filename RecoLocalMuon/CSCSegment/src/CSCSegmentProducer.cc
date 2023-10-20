@@ -2,9 +2,11 @@
  *
  */
 
+
+#include "CSCRecoConditions.h"
 #include <RecoLocalMuon/CSCSegment/src/CSCSegmentProducer.h>
 #include <RecoLocalMuon/CSCSegment/src/CSCSegmentBuilder.h>
-#include <RecoLocalMuon/CSCRecHitD/src/CSCRecoConditions.h>
+
 
 #include <DataFormats/Common/interface/Handle.h>
 #include <FWCore/Framework/interface/ESHandle.h>
@@ -22,8 +24,9 @@ CSCSegmentProducer::CSCSegmentProducer(const edm::ParameterSet& pas) : iev(0) {
     m_token_wire    = consumes<CSCWireHitCollection> ( pas.getParameter<edm::InputTag>("inputObjects") );
     m_token_strip   = consumes<CSCStripHitCollection>( pas.getParameter<edm::InputTag>("inputObjects") );
     segmentBuilder_ = new CSCSegmentBuilder(pas); // pass on the PS
+    m_cscGeometryToken = esConsumes<CSCGeometry, MuonGeometryRecord>();
 
-    recoConditions_    = new CSCRecoConditions( pas ); // access to conditions data
+    recoConditions_    = new CSCRecoConditions( pas,  consumesCollector() ); // access to conditions data
     segmentBuilder_    ->setConditions( recoConditions_ ); // pass down to who needs access
 
   	// register what this produces
@@ -44,9 +47,15 @@ void CSCSegmentProducer::produce(edm::Event& ev, const edm::EventSetup& setup) {
 	
     // find the geometry (& conditions?) for this event & cache it in the builder
   
-    edm::ESHandle<CSCGeometry> h;
-    setup.get<MuonGeometryRecord>().get(h);
+    edm::ESHandle<CSCGeometry> h = setup.getHandle(m_cscGeometryToken);
     const CSCGeometry* pgeom = &*h;
+    segmentBuilder_->setGeometry(pgeom);
+
+
+
+    //    edm::ESHandle<CSCGeometry> h;
+    //    setup.get<MuonGeometryRecord>().get(h);
+    //    const CSCGeometry* pgeom = &*h;
 
     segmentBuilder_->setGeometry(pgeom);
     recoConditions_->initializeEvent( setup );

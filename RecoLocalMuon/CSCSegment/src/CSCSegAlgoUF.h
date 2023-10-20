@@ -7,11 +7,17 @@
 
  */
 
-#include <RecoLocalMuon/CSCSegment/src/CSCSegmentAlgorithm.h>
+//#include <RecoLocalMuon/CSCSegment/src/CSCSegmentAlgorithm.h>
+#include "CSCSegmentAlgorithm.h"
 
 #include <DataFormats/CSCRecHit/interface/CSCRecHit2D.h>
 #include <DataFormats/CSCRecHit/interface/CSCWireHit.h>
 #include <DataFormats/CSCRecHit/interface/CSCStripHit.h>
+#include "RecoLocalMuon/CSCSegment/src/CSCRecoConditions.h"
+#include "RecoLocalMuon/CSCSegment/src/CSCMake2DRecHit.h"
+#include "RecoLocalMuon/CSCSegment/src/CSCXonStrip_MatchGatti.h"
+#include "RecoLocalMuon/CSCSegment/src/CSCFindPeakTime.h"
+
 
 #include "CSCSegFit.h"
 #include "CSCWireSegment.h"

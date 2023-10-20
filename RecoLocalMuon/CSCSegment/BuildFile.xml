@@ -1,5 +1,6 @@
 <use   name="CalibMuon/CSCCalibration"/>
 <use   name="CommonTools/Statistics"/>
+<use   name="RecoLocalMuon/CSCRecHitD"/>
 <use   name="DataFormats/CSCRecHit"/>
 <use   name="DataFormats/Common"/>
 <use   name="DataFormats/GeometryVector"/>

@@ -34,6 +34,7 @@
  */
 
 #include <CalibMuon/CSCCalibration/interface/CSCIndexerBase.h>
+#include <algorithm>
 
 class CSCIndexerStartup : public CSCIndexerBase {
 public:

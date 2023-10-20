@@ -46,6 +46,7 @@
 #include <iosfwd>
 #include <utility>  // for pair
 #include <vector>
+#include <algorithm>
 
 class CSCIndexerOldStartup {
 public:

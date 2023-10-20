@@ -18,6 +18,7 @@
 #include <DataFormats/CSCRecHit/interface/CSCWireHitCollection.h>
 #include <DataFormats/CSCRecHit/interface/CSCStripHitCollection.h>
 #include <DataFormats/CSCRecHit/interface/CSCSegmentCollection.h>
+#include "CSCRecoConditions.h"
 
 #include <FWCore/ParameterSet/interface/ParameterSet.h>
 
@@ -53,8 +54,8 @@ private:
 
     const CSCGeometry* geom_;
 
-    std::map<std::string, CSCSegmentAlgorithm*> algoMap;
-
+    //    %::map<std::string, CSCSegmentAlgorithm*> algoMap;  //  forner
+    std::map<std::string, std::unique_ptr<CSCSegmentAlgorithm>> algoMap;
     CSCRecoConditions* recoConditions_;
 
 };

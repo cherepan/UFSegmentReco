@@ -16,6 +16,10 @@
 #include "DataFormats/CSCRecHit/interface/CSCWireHitCollection.h"
 #include "DataFormats/CSCRecHit/interface/CSCStripHitCollection.h"
 
+#include "Geometry/Records/interface/MuonGeometryRecord.h"
+#include "Geometry/CSCGeometry/interface/CSCGeometry.h"
+
+
 class CSCSegmentBuilder; 
 class CSCRecoConditions;
 
@@ -36,6 +40,7 @@ private:
     edm::EDGetTokenT<CSCRecHit2DCollection> m_token;
     edm::EDGetTokenT<CSCWireHitCollection> m_token_wire;
     edm::EDGetTokenT<CSCStripHitCollection> m_token_strip;
+    edm::ESGetToken<CSCGeometry, MuonGeometryRecord> m_cscGeometryToken;
 
 };
 

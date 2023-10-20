@@ -38,6 +38,7 @@
  */
 
 #include <CalibMuon/CSCCalibration/interface/CSCIndexerBase.h>
+#include <algorithm>
 
 class CSCIndexerPostls1 : public CSCIndexerBase {
 public:

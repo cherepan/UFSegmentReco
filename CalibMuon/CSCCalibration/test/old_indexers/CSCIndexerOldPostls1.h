@@ -50,6 +50,8 @@
  */
 
 #include <DataFormats/MuonDetId/interface/CSCDetId.h>
+#include <algorithm>
+
 #include <boost/tuple/tuple.hpp>
 #include <iosfwd>
 #include <utility>  // for pair

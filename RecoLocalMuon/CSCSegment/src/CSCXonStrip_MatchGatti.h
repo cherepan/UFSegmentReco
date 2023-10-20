@@ -12,7 +12,8 @@
  */
 
 #include <RecoLocalMuon/CSCRecHitD/src/CSCStripHit.h>
-#include <RecoLocalMuon/CSCRecHitD/src/CSCRecoConditions.h>
+
+#include "CSCRecoConditions.h"
 #include <FWCore/ParameterSet/interface/ParameterSet.h>
 
 #include <map>  
